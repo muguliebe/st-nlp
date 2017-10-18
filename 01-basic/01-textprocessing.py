@@ -1,5 +1,7 @@
-import numpy as np
-import re
+# coding: utf-8
+
+# In[56]:
+
 
 sentences = []
 sentences.append('파이썬 학습 자료 공유')
@@ -26,6 +28,17 @@ list_gold.append(1)
 list_gold.append(0)
 list_gold.append(1)
 list_gold.append(0)
+
+
+# In[19]:
+
+
+def process(list_ours):
+    p, r, f1 = evaluation(list_ours, list_gold)
+    print("P: {0:.4f}\nR: {1:.4f}\nF1: {2:.4f}".format(p, r, f1))
+
+
+# In[26]:
 
 
 def evaluation(list_ours, list_gold):
@@ -65,9 +78,10 @@ def evaluation(list_ours, list_gold):
     return precision, recall, f1
 
 
-def process(list_ours):
-    p, r, f1 = evaluation(list_ours, list_gold)
-    print("P: {0:.4f}\nR: {1:.4f}\nF1: {2:.4f}".format(p, r, f1))
+# In[96]:
+
+
+import numpy as np
 
 
 def exact_filtering(list_s):
@@ -82,21 +96,49 @@ def exact_filtering(list_s):
     return list_labels
 
 
+ours = exact_filtering(sentences)
+process(ours)
+
+# In[97]:
+
+
+import re
+
+
 def spchar_handling(list_s):
     list_labels = np.zeros((len(list_s)))
-    ################################
-    ToDo = "remove special character"
-    ################################
+    #     blank start
+    for i in range(len(list_s)):
+        s = list_s[i]
+        s = s.replace(' ', '')
+        s = re.sub("[!@#$%^&*(){};:,.]", "", s)
+        if "비아그라" in s:
+            list_labels[i] = 1
+        else:
+            list_labels[i] = 0
+            #     blank end
     return list_labels
 
 
-def main():
-    list_exact = exact_filtering(sentences)
-    process(list_exact)
+ours = spchar_handling(sentences)
+process(ours)
 
-    # list_spchar = spchar_handling(sentences)
-    # process(list_spchar)
+# In[94]:
 
 
-if __name__ == "__main__":
-    main()
+# corpus hadnling
+
+# how to read file
+fname = 'data/input.txt'
+with open(fname, encoding='utf-8') as f:
+    for line in f:
+        line = line.strip()
+        words = line.split('\t')
+
+# how to read files from folder
+import os
+
+for fname in os.listdir('./'):
+    if '.py' in fname:
+        print(fname)
+
